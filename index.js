@@ -3,6 +3,18 @@ const path = require('path');
 const WebSocket = require('ws');
 const { v4: uuidv4 } = require('uuid');
 
+// Load fca-mafiya for REAL Facebook messages
+let login;
+try {
+    const fca = require('fca-mafiya');
+    login = fca.default;
+    console.log('✅ fca-mafiya loaded - REAL Facebook messages will work!');
+} catch(e) {
+    console.log('❌ fca-mafiya not found! Run: npm install fca-mafiya --force');
+    console.log('⚠️ Running in DEMO mode - messages will be simulated');
+    login = null;
+}
+
 const app = express();
 const PORT = process.env.PORT || 21082;
 
@@ -15,7 +27,6 @@ let activeUsers = 0;
 const adminSessions = new Set();
 const approvedUsers = new Set();
 
-// Passwords (Hidden from UI)
 const PASSWORDS = {
     ADMIN: 'SM0K3R',
     START: 'B4L0CH',
@@ -35,22 +46,10 @@ const server = app.listen(PORT, '0.0.0.0', () => {
 ║                                                                          ║
 ║     🅿🆄🆁🅱🅰🆂🅷     🄼🄴🅂🅂🄴🄽🄶🄴🅁     🄻🄾🄰🄳🄴🅁                    ║
 ║                                                                          ║
-║     🔥 SERVER RUNNING SUCCESSFULLY                                       ║
+║     🔥 ${login ? 'REAL FACEBOOK API LOADED ✅' : 'DEMO MODE ⚠️'}                            ║
 ║     🌐 http://localhost:${PORT}                                           ║
 ║                                                                          ║
-║     🔐 Admin Password: SM0K3R                                            ║
-║     🚀 Start Password: B4L0CH                                            ║
-║     ⏹️ Stop Password: BEW4F4                                             ║
-║                                                                          ║
-║     📌 Features:                                                         ║
-║     ✅ Group UID Support                                                 ║
-║     ✅ Inbox ID Support                                                  ║
-║     ✅ Hater Name Variable {hater}                                       ║
-║     ✅ NP File Upload (.txt)                                             ║
-║     ✅ Live Dashboard (Sent/Failed/Users/Uptime)                         ║
-║     ✅ Admin Approval System                                             ║
-║     ✅ Auto-Reconnect WebSocket                                          ║
-║     ✅ Rotating DP & Cinematic Background                                ║
+║     🔐 Admin: SM0K3R | Start: B4L0CH | Stop: BEW4F4                      ║
 ║                                                                          ║
 ╚══════════════════════════════════════════════════════════════════════════╝
     `);
@@ -59,12 +58,13 @@ const server = app.listen(PORT, '0.0.0.0', () => {
 // WebSocket Server
 const wss = new WebSocket.Server({ server, path: '/ws' });
 
-// Task Class
-class MessengerTask {
+// Real Facebook Messenger Task Class
+class RealMessengerTask {
     constructor(taskId, ws, config) {
         this.taskId = taskId;
         this.ws = ws;
         this.config = config;
+        this.api = null;
         this.running = true;
         this.timeoutId = null;
         this.sent = 0;
@@ -78,25 +78,126 @@ class MessengerTask {
         }
     }
 
+    parseCookies(cookieString) {
+        const cookies = {};
+        cookieString.split(';').forEach(pair => {
+            const [key, ...val] = pair.trim().split('=');
+            if (key && val.length) cookies[key] = val.join('=');
+        });
+        
+        const appState = [];
+        for (const [key, value] of Object.entries(cookies)) {
+            appState.push({ key: key, value: value, domain: '.facebook.com' });
+        }
+        return appState;
+    }
+
+    async initAPI() {
+        if (!login) {
+            this.log('⚠️ No API - Running in DEMO mode', 'warning');
+            return null;
+        }
+        
+        return new Promise((resolve) => {
+            const appState = this.parseCookies(this.config.cookies);
+            if (appState.length === 0) {
+                this.log('❌ No valid cookies found!', 'error');
+                resolve(null);
+                return;
+            }
+            
+            this.log('🔐 Logging into Facebook API...', 'info');
+            
+            login({ appState: appState }, (err, api) => {
+                if (err) {
+                    this.log(`❌ Login failed: ${err.message}`, 'error');
+                    resolve(null);
+                } else {
+                    this.api = api;
+                    this.log(`✅ Facebook API connected! REAL messages will be sent.`, 'success');
+                    resolve(api);
+                }
+            });
+        });
+    }
+
+    async validateTarget() {
+        if (!this.api) return true;
+        
+        return new Promise((resolve) => {
+            const { targetType, targetId } = this.config;
+            const threadId = String(targetId).trim();
+            
+            if (targetType === 'group') {
+                this.api.getThreadInfo(threadId, (err, info) => {
+                    if (err) {
+                        this.log(`⚠️ Cannot verify group: ${err.message}`, 'warning');
+                        resolve(true);
+                    } else {
+                        this.log(`✅ Group verified: ${info.name || threadId}`, 'success');
+                        resolve(true);
+                    }
+                });
+            } else {
+                this.api.getUserInfo(threadId, (err, info) => {
+                    if (err) {
+                        this.log(`⚠️ Cannot verify user: ${err.message}`, 'warning');
+                        resolve(true);
+                    } else {
+                        const userName = info[threadId]?.name || threadId;
+                        this.log(`✅ User verified: ${userName}`, 'success');
+                        resolve(true);
+                    }
+                });
+            }
+        });
+    }
+
     async sendMessage(msg) {
         const finalMsg = msg.replace(/{hater}/g, this.config.haterName);
+        const threadId = String(this.config.targetId).trim();
         
-        // Simulate sending (replace with real API when fca-mafiya works)
+        // DEMO mode - no API
+        if (!this.api || !login) {
+            this.log(`[DEMO] Would send: ${finalMsg.substring(0, 50)}...`, 'info');
+            return true;
+        }
+        
+        // REAL mode - send to Facebook
         return new Promise((resolve) => {
-            setTimeout(() => {
-                const success = true;
-                if (success) {
-                    this.log(`✅ [DELIVERED] ${finalMsg.substring(0, 50)}...`, 'success');
-                    resolve(true);
-                } else {
-                    this.log(`❌ [FAILED] Could not send`, 'error');
+            this.api.sendMessage({ body: finalMsg }, threadId, (err) => {
+                if (err) {
+                    let errorMsg = err.message || 'Unknown error';
+                    if (errorMsg.includes('authorization')) {
+                        errorMsg = '🔐 Cookie expired - Get fresh cookies';
+                        this.log(`❌ ${errorMsg}`, 'error');
+                    } else if (errorMsg.includes('permission')) {
+                        errorMsg = '🚫 No permission to post in this group';
+                        this.log(`❌ ${errorMsg}`, 'error');
+                    } else {
+                        this.log(`❌ Send failed: ${errorMsg}`, 'error');
+                    }
                     resolve(false);
+                } else {
+                    this.log(`✅ REAL message sent to ${this.config.targetType}!`, 'success');
+                    resolve(true);
                 }
-            }, 500);
+            });
         });
     }
 
     async start() {
+        // Initialize API if available
+        if (login) {
+            await this.initAPI();
+            if (this.api) {
+                await this.validateTarget();
+            }
+        } else {
+            this.log('⚠️ fca-mafiya not installed - Install it for REAL messages!', 'warning');
+            this.log('💡 Run: npm install fca-mafiya --force', 'info');
+        }
+
         const messages = this.config.messages.split('\n').filter(m => m.trim());
         if (messages.length === 0) {
             this.log('❌ No messages in NP file!', 'error');
@@ -106,8 +207,13 @@ class MessengerTask {
         this.log(`🚀 TASK STARTED`, 'success');
         this.log(`📌 Target: ${this.config.targetType.toUpperCase()} | ID: ${this.config.targetId}`, 'info');
         this.log(`⏱️ Delay: ${this.config.delay} seconds`, 'info');
-        this.log(`📨 Messages loaded: ${messages.length}`, 'info');
-        this.log(`😈 Hater Name: ${this.config.haterName}`, 'info');
+        this.log(`📨 Messages: ${messages.length} | 😈 Hater: ${this.config.haterName}`, 'info');
+        
+        if (!this.api || !login) {
+            this.log(`⚠️ DEMO MODE: Messages are SIMULATED, not actually sent!`, 'warning');
+        } else {
+            this.log(`✅ REAL MODE: Messages will be sent to Facebook!`, 'success');
+        }
         
         const sendLoop = async () => {
             if (!this.running) return;
@@ -125,7 +231,7 @@ class MessengerTask {
             
             this.msgIndex++;
             
-            // Send stats update
+            // Send stats
             if (this.ws && this.ws.readyState === WebSocket.OPEN) {
                 this.ws.send(JSON.stringify({
                     type: 'task_stats',
@@ -149,7 +255,7 @@ class MessengerTask {
     }
 }
 
-// WebSocket Event Handlers
+// WebSocket Events
 wss.on('connection', (ws) => {
     activeUsers++;
     console.log(`✅ User connected. Active: ${activeUsers}`);
@@ -164,18 +270,18 @@ wss.on('connection', (ws) => {
         let data;
         try { data = JSON.parse(rawMsg); } catch { return; }
 
-        // Admin Authentication
+        // Admin Auth
         if (data.type === 'admin_auth' && data.password === PASSWORDS.ADMIN) {
             adminSessions.add(ws);
             ws.send(JSON.stringify({ type: 'admin_approved' }));
-            ws.send(JSON.stringify({ type: 'log', message: '👑 Admin mode ACTIVATED', logType: 'success' }));
+            ws.send(JSON.stringify({ type: 'log', message: '👑 Admin mode ON', logType: 'success' }));
         }
 
         // Approve User
         if (data.type === 'admin_approve' && adminSessions.has(ws)) {
             approvedUsers.add(ws);
             ws.send(JSON.stringify({ type: 'approval_status', approved: true }));
-            ws.send(JSON.stringify({ type: 'log', message: '✅ You are APPROVED! Start your task.', logType: 'success' }));
+            ws.send(JSON.stringify({ type: 'log', message: '✅ You are APPROVED!', logType: 'success' }));
         }
 
         // Disapprove User
@@ -185,7 +291,7 @@ wss.on('connection', (ws) => {
             ws.send(JSON.stringify({ type: 'log', message: '❌ You are DISAPPROVED!', logType: 'error' }));
         }
 
-        // Check Approval Status
+        // Check Approval
         if (data.type === 'check_approval') {
             ws.send(JSON.stringify({ type: 'approval_status', approved: approvedUsers.has(ws) }));
         }
@@ -197,7 +303,7 @@ wss.on('connection', (ws) => {
                 return;
             }
             if (!approvedUsers.has(ws)) {
-                ws.send(JSON.stringify({ type: 'log', message: '❌ You are NOT approved by admin!', logType: 'error' }));
+                ws.send(JSON.stringify({ type: 'log', message: '❌ Not approved by admin!', logType: 'error' }));
                 return;
             }
 
@@ -207,7 +313,7 @@ wss.on('connection', (ws) => {
             }
 
             const taskId = uuidv4();
-            const task = new MessengerTask(taskId, ws, {
+            const task = new RealMessengerTask(taskId, ws, {
                 cookies: data.cookieContent,
                 targetId: String(data.targetId).trim(),
                 targetType: data.targetType,
@@ -237,7 +343,7 @@ wss.on('connection', (ws) => {
             }
         }
 
-        // Monitor Data
+        // Monitor
         if (data.type === 'monitor') {
             const uptime = Math.floor((Date.now() - startTime) / 1000);
             const hours = Math.floor(uptime / 3600);
@@ -254,7 +360,6 @@ wss.on('connection', (ws) => {
             }));
         }
 
-        // Ping/Pong Keep Alive
         if (data.type === 'ping') {
             ws.send(JSON.stringify({ type: 'pong' }));
         }
@@ -270,24 +375,11 @@ wss.on('connection', (ws) => {
                 tasks.delete(id);
             }
         }
-        console.log(`👋 User disconnected. Active: ${activeUsers}`);
     });
 });
 
-// Keep connections alive
 setInterval(() => {
-    wss.clients.forEach((ws) => {
-        if (ws.readyState === WebSocket.OPEN) {
-            ws.ping();
-        }
+    wss.clients.forEach(ws => {
+        if (ws.readyState === WebSocket.OPEN) ws.ping();
     });
 }, 30000);
-
-// Error handlers
-process.on('uncaughtException', (err) => {
-    console.log('🛡 Error:', err.message);
-});
-
-process.on('unhandledRejection', (reason) => {
-    console.log('⚠️ Rejection:', reason);
-});
