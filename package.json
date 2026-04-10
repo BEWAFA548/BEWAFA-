@@ -1,0 +1,16 @@
+{
+  "name": "purbash-messenger-loader",
+  "version": "7.0.0",
+  "description": "PURBASH Messenger Loader - Group & Inbox Messenger",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "ws": "^8.14.2",
+    "uuid": "^9.0.0"
+  },
+  "author": "PURBASH",
+  "license": "MIT"
+}
