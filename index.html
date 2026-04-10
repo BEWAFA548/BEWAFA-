@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>🄿🅄🅁🄱🄰🅂🄷 | Messenger Loader</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    background: radial-gradient(ellipse at 30% 20%, #0a0f1e, #010308);
+    font-family: 'Poppins', 'Segoe UI', sans-serif;
+    padding: 20px;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* Rotating Background Image */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('https://i.pinimg.com/736x/ae/56/5d/ae565d91838ea6638f9ea83f775269f5.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.15;
+    pointer-events: none;
+    z-index: 0;
+    animation: rotateBg 20s linear infinite;
+}
+
+@keyframes rotateBg {
+    0% { transform: scale(1) rotate(0deg); }
+    50% { transform: scale(1.05) rotate(180deg); }
+    100% { transform: scale(1) rotate(360deg); }
+}
+
+/* Cinematic overlay */
+body::after {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(45deg, rgba(0,0,0,0.3) 0px, rgba(0,0,0,0.3) 2px, transparent 2px, transparent 8px);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
+}
+
+.glass-card {
+    background: rgba(5, 15, 30, 0.8);
+    backdrop-filter: blur(14px);
+    border-radius: 28px;
+    border: 1px solid rgba(0, 255, 255, 0.3);
+    box-shadow: 0 25px 50px rgba(0,0,0,0.5), 0 0 20px rgba(0,255,255,0.1);
+    overflow: hidden;
+}
+
+.header {
+    padding: 25px 30px;
+    text-align: center;
+    background: linear-gradient(135deg, rgba(0,0,0,0.6), rgba(0,50,60,0.6));
+    border-bottom: 2px solid cyan;
+    position: relative;
+}
+
+/* Rotating DP under title */
+.rotating-dp {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 15px auto;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid cyan;
+    box-shadow: 0 0 20px rgba(0,255,255,0.5);
+    animation: spinDp 8s linear infinite;
+}
+
+.rotating-dp img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+@keyframes spinDp {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.stylish-title {
+    font-size: 3rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, #FFD700, #FF8C00, #FF1493, #00FFFF);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 0 20px rgba(255,100,0,0.5);
+    letter-spacing: 4px;
+}
+
+.subtitle {
+    color: #7ec8e0;
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    margin-top: 8px;
+}
+
+.datetime-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 15px;
+    padding: 10px 20px;
+    background: rgba(0,0,0,0.5);
+    border-radius: 50px;
+    font-size: 0.85rem;
+    gap: 10px;
+}
+
+.datetime-bar span {
+    color: cyan;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 18px;
+    padding: 25px;
+}
+
+.stat-card {
+    background: rgba(0, 0, 0, 0.65);
+    border-radius: 20px;
+    padding: 18px;
+    text-align: center;
+    border-left: 4px solid cyan;
+    transition: 0.3s;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    border-left-color: #ff6600;
+    box-shadow: 0 5px 20px rgba(0,255,255,0.2);
+}
+
+.stat-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #88ccff;
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: 800;
+    color: white;
+    font-family: monospace;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 18px;
+    padding: 25px;
+}
+
+.input-group {
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 16px;
+    padding: 12px;
+}
+
+.input-group label {
+    display: block;
+    font-size: 0.7rem;
+    color: cyan;
+    margin-bottom: 6px;
+    font-weight: bold;
+}
+
+input, select, textarea {
+    width: 100%;
+    background: #0a121f;
+    border: 1px solid #2a4c6e;
+    border-radius: 12px;
+    padding: 10px 14px;
+    color: white;
+    font-size: 0.9rem;
+    transition: 0.2s;
+}
+
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: cyan;
+    box-shadow: 0 0 8px cyan;
+}
+
+button {
+    background: linear-gradient(90deg, #1e2f3f, #0a1a2a);
+    border: 1px solid cyan;
+    padding: 12px 28px;
+    border-radius: 40px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: 0.2s;
+}
+
+button:hover {
+    background: linear-gradient(90deg, #2a4a6a, #1a3a5a);
+    box-shadow: 0 0 12px cyan;
+    transform: scale(1.02);
+}
+
+.btn-start {
+    background: linear-gradient(90deg, #1e5631, #0a3a1a);
+    border-color: #00ff88;
+}
+
+.btn-stop {
+    background: linear-gradient(90deg, #8b1a1a, #5a0a0a);
+    border-color: #ff4444;
+}
+
+.btn-admin {
+    background: linear-gradient(90deg, #6a1a8b, #3a0a5a);
+    border-color: #ff44ff;
+}
+
+.button-group {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    padding: 0 25px 25px 25px;
+    flex-wrap: wrap;
+}
+
+.admin-panel {
+    background: rgba(0, 0, 0, 0.7);
+    margin: 0 25px 25px 25px;
+    border-radius: 20px;
+    padding: 18px;
+    border: 1px solid #ff6600;
+}
+
+.admin-controls {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+}
+
+.target-link-box {
+    background: #030c14;
+    margin: 0 25px 20px 25px;
+    padding: 12px;
+    border-radius: 14px;
+    font-size: 0.8rem;
+    text-align: center;
+    border: 1px solid cyan;
+}
+
+.target-link-box a {
+    color: cyan;
+    text-decoration: none;
+}
+
+.log-box {
+    background: #01070c;
+    margin: 0 25px 25px 25px;
+    border-radius: 16px;
+    padding: 15px;
+    height: 300px;
+    overflow-y: auto;
+    font-family: 'Courier New', monospace;
+    font-size: 0.75rem;
+    border: 1px solid #1a4a6a;
+}
+
+.log-entry {
+    padding: 4px 0;
+    border-bottom: 0.5px solid #1a3a4a;
+    color: #aaf0f0;
+}
+
+.log-error {
+    color: #ff8888;
+}
+
+.log-success {
+    color: #88ff88;
+}
+
+.log-warning {
+    color: #ffaa66;
+}
+
+.footer {
+    text-align: center;
+    padding: 20px;
+    border-top: 1px solid rgba(0,255,255,0.2);
+    color: #aaaaff;
+    font-size: 0.8rem;
+}
+
+.footer a {
+    color: cyan;
+    text-decoration: none;
+}
+
+.badge {
+    display: inline-block;
+    background: #2ecc71;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: bold;
+}
+
+.badge-danger {
+    background: #e74c3c;
+}
+
+.badge-warning {
+    background: #f39c12;
+}
+
+.task-id-box {
+    background: #0a1a2a;
+    padding: 8px;
+    border-radius: 10px;
+    margin: 0 25px 20px 25px;
+    font-size: 0.7rem;
+    text-align: center;
+    color: cyan;
+}
+
+input::file-selector-button {
+    background: #1e2f3f;
+    border: 1px solid cyan;
+    border-radius: 8px;
+    padding: 5px 10px;
+    color: white;
+    cursor: pointer;
+}
+
+@media (max-width: 768px) {
+    .stylish-title { font-size: 2rem; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .form-grid { grid-template-columns: 1fr; }
+    .rotating-dp { width: 70px; height: 70px; }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+    <div class="glass-card">
+        <div class="header">
+            <div class="rotating-dp">
+                <img src="https://i.pinimg.com/736x/ae/56/5d/ae565d91838ea6638f9ea83f775269f5.jpg" alt="PURBASH DP">
+            </div>
+            <div class="stylish-title">🄿🅄🅁🄱🄰🅂🄷</div>
+            <div class="subtitle">CINEMATIC MESSENGER LOADER • ULTIMATE EDITION</div>
+            <div class="datetime-bar">
+                <span id="liveDateTime">📅 Loading...</span>
+                <span>⚡ 24/7 AUTO RECONNECT</span>
+                <span>⏱️ Uptime: <span id="uptimeDisplay">0s</span></span>
+            </div>
+        </div>
+
+        <!-- Stats Dashboard -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">✅ TOTAL SENT</div>
+                <div class="stat-value" id="totalSent">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">❌ TOTAL FAILED</div>
+                <div class="stat-value" id="totalFailed">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">👥 ACTIVE USERS</div>
+                <div class="stat-value" id="activeUsers">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">🎯 ACTIVE TASKS</div>
+                <div class="stat-value" id="activeTasks">0</div>
+            </div>
+        </div>
+
+        <!-- Input Form -->
+        <div class="form-grid">
+            <div class="input-group">
+                <label>🎯 TARGET TYPE</label>
+                <select id="targetType">
+                    <option value="group" selected>📢 Group UID</option>
+                    <option value="inbox">💬 Inbox/User ID</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>📌 TARGET ID</label>
+                <input type="text" id="targetId" placeholder="Enter Group UID or User ID">
+            </div>
+            <div class="input-group">
+                <label>😈 HATER NAME</label>
+                <input type="text" id="haterName" placeholder="Name for {hater} variable">
+            </div>
+            <div class="input-group">
+                <label>⏱️ SPEED DELAY (seconds)</label>
+                <input type="number" id="delaySec" value="5" step="1">
+            </div>
+            <div class="input-group">
+                <label>🍪 FACEBOOK COOKIES</label>
+                <textarea id="cookies" rows="2" placeholder="c_user=123456789; xs=abc123xyz;"></textarea>
+            </div>
+            <div class="input-group">
+                <label>📁 NP FILE (.txt file)</label>
+                <input type="file" id="npFile" accept=".txt">
+            </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="button-group">
+            <button id="startBtn" class="btn-start">🚀 START TASK</button>
+            <button id="stopBtn" class="btn-stop">⏹️ STOP TASK</button>
+        </div>
+
+        <!-- Admin Panel -->
+        <div class="admin-panel">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+                <span>🔐 <strong>ADMIN APPROVAL SYSTEM</strong></span>
+                <span id="approvalBadge" class="badge badge-warning">⏳ Not Approved</span>
+            </div>
+            <div class="admin-controls">
+                <input type="password" id="adminPass" placeholder="Admin Password" style="flex:1;">
+                <button id="adminLoginBtn" class="btn-admin">👑 Admin Login</button>
+                <button id="approveBtn" disabled>✅ Approve Me</button>
+                <button id="disapproveBtn" disabled>❌ Disapprove</button>
+            </div>
+            <div id="adminMsg" style="margin-top: 10px; font-size:12px;"></div>
+        </div>
+
+        <!-- Target Link -->
+        <div class="target-link-box" id="targetLinkBox">
+            🔗 <strong>Target Link:</strong> <a id="targetUrlLink" href="#" target="_blank">Enter ID to generate link</a>
+        </div>
+
+        <!-- Current Task ID -->
+        <div class="task-id-box" id="taskIdBox">
+            📋 Current Task ID: <span id="currentTaskId">None</span>
+        </div>
+
+        <!-- Log Box -->
+        <div class="log-box" id="logContainer">
+            <div class="log-entry">⚡ PURBASH Messenger Loader v7.0 Ready</div>
+            <div class="log-entry">👑 Owner: PURBASH</div>
+            <div class="log-entry">💡 Contact owner for access & support</div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <span>👑 OWNER PURBASH 👑</span> | 
+            📘 FB: <a href="https://www.facebook.com/BALOCH.33344444" target="_blank">PURBASH Official</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    let ws;
+    let isApproved = false;
+    let isAdminLogged = false;
+    let currentTaskId = null;
+
+    const PASSWORDS = {
+        ADMIN: 'SM0K3R',
+        START: 'B4L0CH',
+        STOP: 'BEW4F4'
+    };
+
+    // DOM Elements
+    const logContainer = document.getElementById('logContainer');
+    const totalSentSpan = document.getElementById('totalSent');
+    const totalFailedSpan = document.getElementById('totalFailed');
+    const activeUsersSpan = document.getElementById('activeUsers');
+    const activeTasksSpan = document.getElementById('activeTasks');
+    const uptimeSpan = document.getElementById('uptimeDisplay');
+    const targetUrlLink = document.getElementById('targetUrlLink');
+    const approvalBadge = document.getElementById('approvalBadge');
+    const currentTaskIdSpan = document.getElementById('currentTaskId');
+
+    function addLog(msg, type = 'info') {
+        const div = document.createElement('div');
+        div.className = 'log-entry';
+        if (type === 'error') div.classList.add('log-error');
+        else if (type === 'success') div.classList.add('log-success');
+        else if (type === 'warning') div.classList.add('log-warning');
+        div.innerHTML = `[${new Date().toLocaleTimeString()}] ${msg}`;
+        logContainer.appendChild(div);
+        div.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        
+        if (logContainer.children.length > 300) {
+            logContainer.removeChild(logContainer.children[0]);
+        }
+    }
+
+    function updateDateTime() {
+        const now = new Date();
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+        document.getElementById('liveDateTime').innerHTML = `📅 ${now.toLocaleDateString(undefined, options)}`;
+    }
+    setInterval(updateDateTime, 1000);
+    updateDateTime();
+
+    function updateTargetPreview() {
+        let tid = document.getElementById('targetId').value.trim();
+        let type = document.getElementById('targetType').value;
+        if (tid) {
+            let url = type === 'group' ? `https://www.facebook.com/groups/${tid}` : `https://www.facebook.com/profile.php?id=${tid}`;
+            targetUrlLink.href = url;
+            targetUrlLink.innerText = url;
+        } else {
+            targetUrlLink.innerText = 'Enter ID to generate link';
+        }
+    }
+    document.getElementById('targetId').addEventListener('input', updateTargetPreview);
+    document.getElementById('targetType').addEventListener('change', updateTargetPreview);
+    updateTargetPreview();
+
+    function connectWebSocket() {
+        const protocol = location.protocol === 'https:' ? 'wss://' : 'ws://';
+        ws = new WebSocket(protocol + location.host + '/ws');
+
+        ws.onopen = () => {
+            addLog('✅ Connected to PURBASH Server', 'success');
+            ws.send(JSON.stringify({ type: 'check_approval' }));
+        };
+
+        ws.onclose = () => {
+            addLog('⚠️ Connection lost, reconnecting in 3 seconds...', 'warning');
+            setTimeout(connectWebSocket, 3000);
+        };
+
+        ws.onerror = (error) => {
+            addLog('❌ WebSocket Error', 'error');
+        };
+
+        ws.onmessage = (event) => {
+            let data;
+            try { data = JSON.parse(event.data); } catch { return; }
+
+            if (data.type === 'log') {
+                addLog(data.message, data.logType);
+            }
+
+            if (data.type === 'task_started') {
+                currentTaskId = data.taskId;
+                currentTaskIdSpan.innerText = currentTaskId;
+                addLog(`🚀 TASK STARTED! ID: ${data.taskId}`, 'success');
+            }
+
+            if (data.type === 'stopped') {
+                addLog(`⏹️ TASK STOPPED: ${data.taskId}`, 'warning');
+                if (currentTaskId === data.taskId) {
+                    currentTaskId = null;
+                    currentTaskIdSpan.innerText = 'None';
+                }
+            }
+
+            if (data.type === 'monitor_data') {
+                uptimeSpan.innerText = data.uptimeFormatted || '0s';
+                totalSentSpan.innerText = data.totalSent || 0;
+                totalFailedSpan.innerText = data.totalFailed || 0;
+                activeUsersSpan.innerText = data.activeUsers || 0;
+                activeTasksSpan.innerText = data.activeTasks || 0;
+            }
+
+            if (data.type === 'approval_status') {
+                isApproved = data.approved;
+                if (isApproved) {
+                    approvalBadge.innerText = '✅ APPROVED';
+                    approvalBadge.className = 'badge';
+                    addLog('✅ You have been APPROVED by admin!', 'success');
+                } else {
+                    approvalBadge.innerText = '⛔ NOT APPROVED';
+                    approvalBadge.className = 'badge badge-danger';
+                    addLog('⛔ Not approved by admin. Contact owner.', 'warning');
+                }
+            }
+
+            if (data.type === 'admin_approved') {
+                isAdminLogged = true;
+                document.getElementById('approveBtn').disabled = false;
+                document.getElementById('disapproveBtn').disabled = false;
+                document.getElementById('adminMsg').innerHTML = '<span style="color:#0f0;">✅ Admin mode ACTIVE</span>';
+                addLog('👑 Admin mode activated', 'success');
+            }
+        };
+    }
+
+    setInterval(() => {
+        if (ws && ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({ type: 'monitor' }));
+        }
+    }, 2000);
+
+    setInterval(() => {
+        if (ws && ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({ type: 'ping' }));
+        }
+    }, 25000);
+
+    document.getElementById('adminLoginBtn').onclick = () => {
+        const pass = document.getElementById('adminPass').value;
+        if (pass === PASSWORDS.ADMIN) {
+            ws.send(JSON.stringify({ type: 'admin_auth', password: PASSWORDS.ADMIN }));
+            document.getElementById('adminPass').value = '';
+        } else {
+            document.getElementById('adminMsg').innerHTML = '<span style="color:#f00;">❌ Wrong Admin Password</span>';
+            addLog('❌ Admin login failed', 'error');
+            setTimeout(() => {
+                document.getElementById('adminMsg').innerHTML = '';
+            }, 3000);
+        }
+    };
+
+    document.getElementById('approveBtn').onclick = () => {
+        if (isAdminLogged && ws) {
+            ws.send(JSON.stringify({ type: 'admin_approve' }));
+            addLog('📢 Requesting admin approval...', 'info');
+        }
+    };
+
+    document.getElementById('disapproveBtn').onclick = () => {
+        if (isAdminLogged && ws) {
+            ws.send(JSON.stringify({ type: 'admin_disapprove' }));
+            addLog('⛔ Requesting admin disapproval...', 'warning');
+        }
+    };
+
+    function readNPFile(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (e) => resolve(e.target.result);
+            reader.onerror = reject;
+            reader.readAsText(file);
+        });
+    }
+
+    document.getElementById('startBtn').onclick = async () => {
+        const startPass = prompt("🔐 Enter START TASK Password:");
+        if (startPass !== PASSWORDS.START) {
+            addLog('❌ Invalid START password!', 'error');
+            return;
+        }
+
+        if (!isApproved) {
+            addLog('❌ You are NOT approved by admin!', 'error');
+            return;
+        }
+
+        const targetType = document.getElementById('targetType').value;
+        const targetId = document.getElementById('targetId').value.trim();
+        const haterName = document.getElementById('haterName').value.trim();
+        const delay = document.getElementById('delaySec').value;
+        const cookies = document.getElementById('cookies').value;
+        const npFile = document.getElementById('npFile').files[0];
+
+        if (!targetId) {
+            addLog('❌ Target ID is required!', 'error');
+            return;
+        }
+        if (!cookies.trim()) {
+            addLog('❌ Cookies are required!', 'error');
+            return;
+        }
+        if (!npFile) {
+            addLog('❌ Please select an NP file!', 'error');
+            return;
+        }
+
+        try {
+            const messageContent = await readNPFile(npFile);
+            
+            ws.send(JSON.stringify({
+                type: 'start',
+                targetType: targetType,
+                targetId: targetId,
+                haterName: haterName || 'Hater',
+                delay: delay,
+                cookieContent: cookies,
+                messageContent: messageContent,
+                taskPassword: PASSWORDS.START
+            }));
+            
+            addLog('🚀 Sending start command to server...', 'info');
+        } catch(err) {
+            addLog('❌ Failed to read NP file: ' + err.message, 'error');
+        }
+    };
+
+    document.getElementById('stopBtn').onclick = () => {
+        const stopPass = prompt("🔐 Enter STOP TASK Password:");
+        if (stopPass !== PASSWORDS.STOP) {
+            addLog('❌ Invalid STOP password!', 'error');
+            return;
+        }
+
+        const taskId = prompt("Enter Task ID to stop:", currentTaskId || "");
+        if (!taskId) {
+            addLog('❌ Task ID required!', 'error');
+            return;
+        }
+
+        if (ws && ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({
+                type: 'stop_by_id',
+                taskId: taskId,
+                stopPassword: PASSWORDS.STOP
+            }));
+            addLog(`⏹️ Sending stop command for task: ${taskId}`, 'info');
+        }
+    };
+
+    connectWebSocket();
+</script>
+</body>
+</html>
