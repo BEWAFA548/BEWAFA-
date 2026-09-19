@@ -1,7 +1,7 @@
 {
-  "name": "purbash-messenger-loader",
-  "version": "8.0.0",
-  "description": "PURBASH Messenger Loader - REAL Facebook Messages",
+  "name": "my-web-app",
+  "version": "1.0.0",
+  "description": "Legitimate Node.js Express & WebSocket Application",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
@@ -9,7 +9,9 @@
   "dependencies": {
     "express": "^4.18.2",
     "ws": "^8.14.2",
-    "uuid": "^9.0.0",
-    "fca-mafiya": "^1.0.9"
+    "uuid": "^9.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
